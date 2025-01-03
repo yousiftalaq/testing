@@ -27,17 +27,17 @@ else
         StateHasChanged(); // Update the UI
     }
     private void SendMessage(){
-        tcpServer = new TcpServer();
-        tcpServer.SendMessage(message); // Start server on port 8080
+       // tcpServer = new TcpServer();
+      //  tcpServer.SendMessage(message); // Start server on port 8080
 
     }
     private void OpenServer()
     {
         if (!TCSServerOpen)
         {
-            tcpServer = new TcpServer();
-            tcpServer.OnIncrementReceived += IncrementCount; // Subscribe to event
-            tcpServer.Start(8080, message); // Start server on port 8080
+          //  tcpServer = new TcpServer();
+         //   tcpServer.OnIncrementReceived += IncrementCount; // Subscribe to event
+         //   tcpServer.Start(8080, message); // Start server on port 8080
             TCSServerOpen = true;
         }
     }
@@ -46,10 +46,10 @@ else
     {
         if (tcpServer != null)
         {
-            tcpServer.OnIncrementReceived -= IncrementCount; // Unsubscribe from event
-            tcpServer.Stop();
-            tcpServer = null;
-            TCSServerOpen = false;
+            // tcpServer.OnIncrementReceived -= IncrementCount; // Unsubscribe from event
+            // tcpServer.Stop();
+            // tcpServer = null;
+            // TCSServerOpen = false;
         }
     }
 }

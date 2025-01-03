@@ -1,82 +1,46 @@
 ﻿@page "/"
-@using testing.models;
+@using System.Net
+@using testing.models
+@inject NavigationManager Navigation
 
-
-@* @if (!TCSServerOpen)
-{
-    <button class="btn btn-success" @onclick="OpenServer">Open TCPServer</button>
-}
-else
-{ *@
-<button class="btn btn-danger" @onclick="StopTCPServer">Stop TCPServer</button>
-<br />
-<br />
-<div class="page-container">
-    <div class="row">
-        <div class="col-6 judge-controller-side">
-            <div class="judge-controller-red">
-                <label @onclick="sendTCPRequestToAdd">Vote Up</label>
-            </div>
-            <div class="judge-controller-red">
-                <label @onclick="sendTCPRequestToAdd">Vote Down</label>
-            </div>
-        </div>
-        <div class="col-6 judge-controller-side">
-            <div class="judge-controller-blue">
-                <label @onclick="sendTCPRequestToAdd">Vote Up</label>
-            </div>
-            <div class="judge-controller-blue">
-                <label @onclick="sendTCPRequestToAdd">Vote Down</label>
-            </div>
-        </div>
-    </div>
-</div>
-@* } *@
-
-
-
+<h3>Home</h3>
+<input type="text" @bind="message" />
+<button @onclick="StartTcpServer">Start Server</button>
+<button @onclick="SendMessage">Send Message</button>
+<button @onclick="StopTcpServer">Stop Server</button>
 
 @code {
-    private int currentCount = 0;
-    private bool TCSServerOpen = false;
+    private string message;
+    private TcpListener server;
+    private TcpClient client;
     private TcpServer tcpServer;
 
-    private void IncrementCount()
+    private void StartTcpServer()
     {
-        currentCount++;
-        StateHasChanged(); // Update the UI
+        // Initialize shared server and client
+        server = new TcpListener(IPAddress.Any, 8080);
+        client = null;
+
+        // Pass them to TcpServer
+        tcpServer = new TcpServer(server, client);
+        tcpServer.StartServer(8080);
+
+        tcpServer.AcceptClient();
     }
 
-    private void OpenServer()
-    {
-        if (!TCSServerOpen)
-        {
-            tcpServer = new TcpServer();
-            tcpServer.OnIncrementReceived += IncrementCount; // Subscribe to event
-           // tcpServer.Start(8080); // Start server on port 8080
-            TCSServerOpen = true;
-        }
-    }
-
-    private void StopTCPServer()
+    private void SendMessage()
     {
         if (tcpServer != null)
         {
-            tcpServer.OnIncrementReceived -= IncrementCount; // Unsubscribe from event
-            tcpServer.Stop();
-            tcpServer = null;
-            TCSServerOpen = false;
+            tcpServer.SendMessage(message);
         }
     }
 
-    private void sendTCPRequestToAdd()
+    private void StopTcpServer()
     {
-        // Signal Signals = new Signal();
-        // Signals.SendingSignalAsync();
-
-        tcpServer = new TcpServer();
-        // tcpServer.OnIncrementReceived += IncrementCount; // Subscribe to event
-       // tcpServer.Start(8080); // Start server on port 8080
-                               //  TCSServerOpen = true;
+        if (tcpServer != null)
+        {
+            tcpServer.StopServer();
+        }
     }
 }
