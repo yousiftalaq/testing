@@ -225,6 +225,8 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace testing.models
 {
@@ -259,14 +261,20 @@ namespace testing.models
             }
         }
 
+      
         public void SendMessage(string message)
         {
             if (client != null)
             {
+                JsonMessage jsonMessage = new JsonMessage()
+                {
+                    Message = message,
+                };
+
                 NetworkStream stream = client.GetStream();
-                byte[] data = Encoding.ASCII.GetBytes(message + "\n");
+                byte[] data = Encoding.ASCII.GetBytes(JsonSerializer.Serialize( jsonMessage) + "\n");
                 stream.Write(data, 0, data.Length);
-                Console.WriteLine("Message sent: " + message);
+                Console.WriteLine("Message sent: " + jsonMessage);
             }
         }
 
@@ -276,6 +284,26 @@ namespace testing.models
             server?.Stop();
             Console.WriteLine("Server stopped");
         }
+
+
+        #region Get Message
+        public void GetMessage()
+        {
+            using (NetworkStream stream = client.GetStream())
+            {
+    
+
+                // Read response from client
+                byte[] buffer = new byte[1024];
+                int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                if (bytesRead > 0)
+                {
+                    string clientMessage = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    Console.WriteLine($"Received from : {clientMessage}");
+                }
+            }
+        }
+        #endregion get message 
     }
 }
 

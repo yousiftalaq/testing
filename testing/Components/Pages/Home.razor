@@ -8,6 +8,7 @@
 <button @onclick="StartTcpServer">Start Server</button>
 <button @onclick="SendMessage">Send Message</button>
 <button @onclick="StopTcpServer">Stop Server</button>
+<button @onclick="GetMessage">GET Message TCP</button>
 
 @code {
     private string message;
@@ -18,12 +19,12 @@
     private void StartTcpServer()
     {
         // Initialize shared server and client
-        server = new TcpListener(IPAddress.Any, 8080);
+        server = new TcpListener(IPAddress.Any, 3000);// 8080);
         client = null;
 
         // Pass them to TcpServer
         tcpServer = new TcpServer(server, client);
-        tcpServer.StartServer(8080);
+        tcpServer.StartServer(3000);
 
         tcpServer.AcceptClient();
     }
@@ -41,6 +42,14 @@
         if (tcpServer != null)
         {
             tcpServer.StopServer();
+        }
+    }
+
+    private void GetMessage()
+    {
+        if (tcpServer != null)
+        {
+            tcpServer.GetMessage();
         }
     }
 }
